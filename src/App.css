@@ -33,9 +33,28 @@
   box-shadow: 3px 3px 8px 0px rgba(0,0,0,0.3); 
   max-width: 25vw;
 }
-
-@keyframes App-logo-spin {
-  from { transform: rotate(0deg); }
-  to { transform: rotate(360deg); }
+.flex-container {
+  padding: 0;
+  margin: 0;
+  list-style: none;
+  
+  display: -webkit-box;
+  display: -moz-box;
+  display: -ms-flexbox;
+  display: -webkit-flex;
+  display: flex;
+  
+  -webkit-flex-flow: row wrap;
+  justify-content: center;
 }
 
+.flex-item {
+  color: black;
+  font-weight: bold;
+  font-size: 1.5em;
+  text-align: center;
+  margin: 10px
+}
+.center {
+  align-content: center;
+}
