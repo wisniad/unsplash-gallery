@@ -28,6 +28,24 @@ export default (state = {}, action) => {
         getting: false,
         error: true
     }
+    /*case 'GET_PHOTO_BEGIN':
+      return {
+        ...state,
+        getting: true,
+        error: null
+    }
+    case 'GET_PHOTO_SUCCESS':
+      return {
+        ...state,
+        data: action.data,
+        getting: false    
+      }
+    case 'GET_PHOTO_FAIL':
+      return {
+        ...state,
+        getting: false,
+        error: true
+    }*/
     default:
       return state
     }

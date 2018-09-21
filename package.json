@@ -6,9 +6,11 @@
     "moment": "^2.22.2",
     "react": "^16.5.1",
     "react-dom": "^16.5.1",
+    "react-modal": "^3.5.1",
     "react-moment": "^0.7.9",
     "react-redux": "^5.0.7",
     "react-scripts": "1.1.5",
+    "react-toasts": "^2.0.13",
     "redux": "^4.0.0",
     "unsplash-js": "^4.8.0"
   },

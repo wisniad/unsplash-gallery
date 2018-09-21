@@ -3,8 +3,11 @@ import './App.css';
 import { simpleAction } from './actions/simpleAction'
 import { connect } from 'react-redux';
 import Moment from 'react-moment';
+import Modal from 'react-modal';
+import {ToastContainer, ToastStore} from 'react-toasts';
 
 Moment.globalFormat = 'DD-MM-YYYY';
+Modal.setAppElement('#root')
 
 
 class App extends Component {
@@ -13,26 +16,34 @@ class App extends Component {
     super(props);
     this.state = 
     {
-      search: 'home',
+      search: 'flowers',
       searchHistory: [],
-      dataFromApi: [],
       showData: 0,
-      currentSort: 'date',
-      currentSortDir: 'asc',
+      currentSort: 'created_at',
+      currentSortDir: 'desc',
+      modalIsOpen: false,
+      favorites: []
     };
     this.handleChange = this.handleChange.bind(this)
     this.handleSubmitSearch = this.handleSubmitSearch.bind(this)
+    this.openModal = this.openModal.bind(this);
+    this.closeModal = this.closeModal.bind(this);
   };
 
-  //state = { searchHistory: [] }
-  
+  openModal() {
+    this.setState({modalIsOpen: true});
+  }
+
+  closeModal() {
+    this.setState({modalIsOpen: false});
+  }  
+
   handleChange(event) {
     this.setState({search: event.target.value})
-  };
+  }
 
   handleSubmitSearch(event) {
-    console.log('this is current sort: ', this.state.currentSort)
-    console.log('this is current sort dir: ', this.state.currentSortDir)
+
     event.preventDefault();
     let checkArray = isInArray(this.state.searchHistory, this.state.search)
 
@@ -49,7 +60,7 @@ class App extends Component {
               ? this.props.rootReducer.simpleReducer.data 
               : 0);
               this.state.searchHistory.push(this.state.search)  
-          }, 10);
+          }, 100);
         });
       }
       let setView = () => {
@@ -60,7 +71,7 @@ class App extends Component {
             if(checkArray !== -1) {
               this.setState({showData: checkArray})
             }
-          }, 400);
+          }, 900);
         });
       }
 
@@ -88,6 +99,40 @@ class App extends Component {
   render() {
     return (
       <div className="App">
+        <button onClick={this.openModal}>Favorite pictures</button>
+
+        <Modal
+          isOpen={this.state.modalIsOpen}
+          onAfterOpen={this.afterOpenModal}
+          onRequestClose={this.closeModal}
+          contentLabel="Example Modal"
+        >
+
+          <h2>Favorite pictures</h2>
+          <button onClick={this.closeModal}>close</button>
+          <div className="cards">
+
+         {
+          this.state.favorites.length > 0 
+          ? this.state.favorites.map(
+                (object, i) =>
+                  <div key={i}> 
+                    <img src={object.urls.thumb} alt={object.description}/>
+                    <p>Created at:
+                      {' '}
+                      <Moment>
+                        {object.created_at}
+                      </Moment>
+                    </p>
+                    {/*<p>Downloads: {object.downloads}</p>*/}
+                    <p>Likes: {object.likes}</p>
+                  </div> 
+                  )
+                  : <p>No favorite pictures</p>
+                }
+          </div>
+        </Modal>
+
         <h1>Unsplash search</h1>
         <h2>Search:</h2>
         <div>
@@ -96,18 +141,20 @@ class App extends Component {
             <input type="submit" value="Submit" />
           </form>
 
-            <select defaultValue="created_at" onChange={(e) => this.setState({ currentSort: e.target.value })}>>
+            <select defaultValue="created_at" onChange={(e) => this.setState({ currentSort: e.target.value })}>
               <option value="created_at">Created at</option>
-              <option value="xxx">Downloads count</option>
+              {/*<option value="download">Downloads count</option>*/}
               <option value="likes">Likes count</option>
             </select>
 
-
-            <select defaultValue="asc" onChange={(e) => this.setState({ currentSortDir: e.target.value })}>>
+            <select defaultValue="desc" onChange={(e) => this.setState({ currentSortDir: e.target.value })}>>
               <option value="asc">ASC</option>
               <option value="desc">DESC</option>
             </select>
-
+            {/*<p>App can make 50 requests for pictures</p>
+            <button onClick={getDownloadData(this.props.rootReducer.simpleReducer.data, this.state.showData)}>
+              Get download data about collection below ( -20 requests)
+              </button>*/}
         </div>
         <h2>Search history:</h2>
         <div className="flex-container">
@@ -143,8 +190,20 @@ class App extends Component {
              this.sortAll(this.props.rootReducer.simpleReducer.data[this.state.showData].results)
               .map(
                 (object, i) =>
-                  <div key={i}> 
+                  <div key={i} > 
                     <img src={object.urls.thumb} alt={object.description}/>
+                    <br></br>
+                    <button onClick={(e) => {
+                      e.preventDefault()
+                      this.state.favorites.push(object)
+                      ToastStore.success('Picture added to favorites!')
+                    }} >
+                     Add to favorites</button>
+                    
+                    <ToastContainer store={ToastStore}/>
+
+                    <div>
+                  </div>
                     <p>Created at:
                       {' '}
                       <Moment>
@@ -155,7 +214,7 @@ class App extends Component {
                     <p>Likes: {object.likes}</p>
                   </div>
                   )
-              : <p className="center">What would you like to find?</p>
+              : <p className="flex-item ">What would you like to find?</p>
             : <p className="flex-item">What would you like to find?</p>
           }
         </main>
@@ -165,12 +224,12 @@ class App extends Component {
 }
 
 
+
 const mapStateToProps = (state) => ({
  ...state
 })
 const mapDispatchToProps = dispatch => ({
-  simpleAction: (search, ownProps) => dispatch(simpleAction(search, ownProps)),
-  
+  simpleAction: (search, ownProps) => dispatch(simpleAction(search, ownProps))
 })
 
 function isInArray(oldSearch, newSearch) {

@@ -10,7 +10,6 @@ const unsplash = new Unsplash({
   });
 
 export const simpleAction = (search, ownProps) => dispatch => {
-  console.log('own props',ownProps)
   //console.log('this is search', search)
   if(ownProps !== undefined){
     dispatch({
@@ -36,5 +35,55 @@ export const simpleAction = (search, ownProps) => dispatch => {
         error => dispatch({type: 'GET_FAIL', error})
       )
     }
-    return 1;
 };
+/*
+export const getDownloadData = (ownProps, showData) => dispatch => {
+  
+  //console.log('own props',ownProps)
+  //console.log('show data', showData)
+  let data = ownProps[showData].results
+
+  let slicedData = []
+  for( let x = 0; x < 3; x++){
+    slicedData.push(data[x])
+  }
+  
+  let downloadsInfo = []
+  /*slicedData.map( (record) => {
+    unsplash.photos.getPhoto(record.id)
+      .then(response => response.json())
+      .then( (res) =>
+        downloadsInfo.push(res.downloads)
+      )
+  })*/
+  /*setTimeout( () => {
+    for( let y = 0 ; y < slicedData.length; y++ ){ 
+        slicedData[y].downloads = downloadsInfo[y]
+      }
+      console.log('this iis sliced with download info',slicedData)  
+  }, 2000);
+
+  dispatch({
+    type: 'GET_PHOTO_BEGIN'
+})
+slicedData.map( (record) => {
+  unsplash.photos.getPhoto(record.id)
+    .then(response => response.json())
+    .then( (res) =>
+      downloadsInfo.push(res.downloads)
+    )})
+  .then( () => {
+    for( let y = 0 ; y < slicedData.length; y++ ){ 
+      slicedData[y].downloads = downloadsInfo[y]
+    }
+    return slicedData;
+  })
+  .then(
+    data => dispatch({type: 'GET_PHOTO_SUCCESS', data})
+  ).catch(
+    error => dispatch({type: 'GET_PHOTO_FAIL', error})
+  )
+   
+   
+
+};*/
