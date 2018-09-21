@@ -17,9 +17,11 @@ class App extends Component {
       searchHistory: [],
       dataFromApi: [],
       showData: 0,
+      currentSort: 'date',
+      currentSortDir: 'asc',
     };
     this.handleChange = this.handleChange.bind(this)
-    this.handleSubmit = this.handleSubmit.bind(this)
+    this.handleSubmitSearch = this.handleSubmitSearch.bind(this)
   };
 
   //state = { searchHistory: [] }
@@ -28,9 +30,9 @@ class App extends Component {
     this.setState({search: event.target.value})
   };
 
-  
-
-  handleSubmit(event) {
+  handleSubmitSearch(event) {
+    console.log('this is current sort: ', this.state.currentSort)
+    console.log('this is current sort dir: ', this.state.currentSortDir)
     event.preventDefault();
     let checkArray = isInArray(this.state.searchHistory, this.state.search)
 
@@ -73,15 +75,40 @@ class App extends Component {
     this.setState({showData: e})
   }
 
+
+  sortAll = (data) => {
+    return data.sort((a, b) => {
+      let modifier = 1;
+      if (this.state.currentSortDir === 'desc') modifier = -1;
+      if (a[this.state.currentSort] < b[this.state.currentSort]) return -1 * modifier;
+      if (a[this.state.currentSort] > b[this.state.currentSort]) return 1 * modifier;
+      return 0;
+    })
+  }
   render() {
     return (
       <div className="App">
         <h1>Unsplash search</h1>
         <h2>Search:</h2>
-        <form onSubmit={this.handleSubmit}>   
-          <input type="text" value={this.state.search} onChange={this.handleChange} />
-          <input type="submit" value="Submit" />
-        </form>
+        <div>
+          <form onSubmit={this.handleSubmitSearch}>   
+            <input type="text" value={this.state.search} onChange={this.handleChange} />
+            <input type="submit" value="Submit" />
+          </form>
+
+            <select defaultValue="created_at" onChange={(e) => this.setState({ currentSort: e.target.value })}>>
+              <option value="created_at">Created at</option>
+              <option value="xxx">Downloads count</option>
+              <option value="likes">Likes count</option>
+            </select>
+
+
+            <select defaultValue="asc" onChange={(e) => this.setState({ currentSortDir: e.target.value })}>>
+              <option value="asc">ASC</option>
+              <option value="desc">DESC</option>
+            </select>
+
+        </div>
         <h2>Search history:</h2>
         <div className="flex-container">
         {
@@ -96,11 +123,10 @@ class App extends Component {
                   {oldSearch}
                 </button>
               )
-              : <p>No daee</p>
+              : <p>No data</p>
         } 
         </div>
         
-
         {
           this.props.rootReducer.simpleReducer.getting === true &&
           <div>Getting data</div>
@@ -114,7 +140,8 @@ class App extends Component {
         <main className="cards">
          { this.props.rootReducer.simpleReducer.data   !== undefined ?
             this.props.rootReducer.simpleReducer.data.length !== null ?
-              this.props.rootReducer.simpleReducer.data[this.state.showData].results.map(
+             this.sortAll(this.props.rootReducer.simpleReducer.data[this.state.showData].results)
+              .map(
                 (object, i) =>
                   <div key={i}> 
                     <img src={object.urls.thumb} alt={object.description}/>
