@@ -5,22 +5,53 @@ import { connect } from 'react-redux';
 
 class App extends Component {
 
-  state = {
-    search: 'dogs'
+  constructor(props) {
+    super(props);
+    this.state = 
+    {
+      search: '',
+      searchHistory: []
+    };
+
+    this.handleChange = this.handleChange.bind(this);
+    this.handleSubmit = this.handleSubmit.bind(this);
+  }
+  state = { searchHistory: [] }
+  handleChange(event) {
+    this.setState({search: event.target.value});
+  }
+
+  handleSubmit(event) {
+    this.props.simpleAction(this.state.search);
+    this.state.searchHistory.push(this.state.search)
+    event.preventDefault();
   }
 
   componentDidMount() {
-    this.props.simpleAction();
+    //this.props.simpleAction(this.state.pageNumber);
   }
-  componentWillUpdate() {
-  } 
   render() {
     return (
       <div className="App">
         {
-          console.log('STATE',this.props)
+          this.state.searchHistory != null ?
+            this.state.searchHistory.map(
+              (oldSearch, i) =>
+                <p key={i}> 
+                  {oldSearch}
+                </p>
+                )
+            : <p>No data</p>
+        }        <form onSubmit={this.handleSubmit}>
+          <label>
+            Name:         
+            <input type="text" value={this.state.search} onChange={this.handleChange} />
+          </label>
+          <input type="submit" value="Submit" />
+        </form>
+        {
+          console.log('this is props',this.props)
         }
-
         {
           this.props.rootReducer.simpleReducer.getting === true &&
           <div>Getting data</div>
@@ -35,8 +66,11 @@ class App extends Component {
         {
           this.props.rootReducer.simpleReducer.data != null ?
             this.props.rootReducer.simpleReducer.data.results.map(
-              (object, i) => 
-                <img src={object.urls.thumb} key={i} alt={object.description}/>
+              (object, i) =>
+                <div key={i}> 
+                  <img src={object.urls.thumb} alt={object.description}/>
+                  <p>Created at: {object.created_at}</p>
+                </div>
                 )
             : <p>No data</p>
         }
@@ -46,17 +80,15 @@ class App extends Component {
   }
 }
 
-const showState = () => {
-  console.log(this.state)
-}
 const mapStateToProps = (state) => ({
   ...state
 })
 const mapDispatchToProps = dispatch => ({
-  simpleAction: () => dispatch(simpleAction()),
+  simpleAction: (search) => dispatch(simpleAction(search)),
   
 })
 export default connect(
   mapStateToProps, 
   mapDispatchToProps
   )(App);
+  

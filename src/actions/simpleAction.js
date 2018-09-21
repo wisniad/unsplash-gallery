@@ -10,12 +10,12 @@ const unsplash = new Unsplash({
     callbackUrl: "{CALLBACK_URL}"
   });
 
-export const simpleAction = () => dispatch => {
+export const simpleAction = (search) => dispatch => {
+  console.log('this is search', search)
     dispatch({
         type: 'GET_BEGIN'
     });
-
-    unsplash.search.photos("dogs", 1)
+    unsplash.search.photos(search, 1, 20)
       .then(response => response.json())
       .then(
         data => dispatch({type: 'GET_SUCCESS', data})

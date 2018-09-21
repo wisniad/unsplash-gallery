@@ -13,7 +13,9 @@ export default (state = {}, action) => {
       return {
         ...state,
         data: action.data,
-        getting: false    }
+        pageNumber: action.pageNumber,
+        getting: false    
+      }
     case 'GET_FAIL':
       return {
         ...state,
